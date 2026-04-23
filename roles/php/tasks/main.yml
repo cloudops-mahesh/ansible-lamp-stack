@@ -1,0 +1,30 @@
+---
+- name: Install PHP and modules
+  apt:
+    name:
+      - php
+      - php-mysql
+      - php-cli
+      - php-curl
+      - php-json
+      - php-mbstring
+      - libapache2-mod-php
+    state: present
+    update_cache: yes
+
+- name: Deploy PHP info test page
+  copy:
+    content: |
+      <?php
+        echo "<h1>PHP is working!</h1>";
+        echo "<p>PHP Version: " . phpversion() . "</p>";
+        echo "<p>App: {{ app_name }}</p>";
+      ?>
+    dest: /var/www/{{ app_name }}/info.php
+    owner: www-data
+    group: www-data
+
+- name: Restart Apache to load PHP
+  service:
+    name: apache2
+    state: restarted

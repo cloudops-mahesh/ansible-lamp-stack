@@ -1,0 +1,12 @@
+# App Config
+app_name: myapp
+app_domain: myapp.local
+
+# MySQL Config
+mysql_root_password: "Root@1234"
+mysql_db_name: "myapp_db"
+mysql_db_user: "myapp_user"
+mysql_db_password: "App@1234"
+
+# PHP version
+php_version: "7.4"

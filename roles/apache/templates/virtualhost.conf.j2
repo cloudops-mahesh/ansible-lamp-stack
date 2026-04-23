@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+    ServerName {{ app_domain }}
+    ServerAdmin webmaster@{{ app_domain }}
+    DocumentRoot /var/www/{{ app_name }}
+
+    <Directory /var/www/{{ app_name }}>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/{{ app_name }}_error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ app_name }}_access.log combined
+</VirtualHost>

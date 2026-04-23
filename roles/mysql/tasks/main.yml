@@ -1,0 +1,66 @@
+
+---
+- name: Install MySQL packages
+  apt:
+    name:
+      - mysql-server
+      - mysql-client
+      - python3-mysqldb
+    state: present
+    update_cache: yes
+
+- name: Fix MySQL user home directory
+  file:
+    path: /nonexistent
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0755'
+
+- name: Ensure MySQL is started and enabled
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Wait for MySQL to be ready
+  wait_for:
+    path: /var/run/mysqld/mysqld.sock
+    timeout: 30
+
+- name: Create .my.cnf for root with password
+  copy:
+    content: |
+      [client]
+      user=root
+      password={{ mysql_root_password }}
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Set MySQL root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    host_all: yes
+    state: present
+
+- name: Create application database
+  mysql_db:
+    name: "{{ mysql_db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Create application DB user
+  mysql_user:
+    name: "{{ mysql_db_user }}"
+    password: "{{ mysql_db_password }}"
+    priv: "{{ mysql_db_name }}.*:ALL"
+    host: "%"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
